@@ -1,0 +1,40 @@
+version: "3.8"
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: causal_recourse_api
+    command: uvicorn module_4_decision_dashboard.api.main:app --host 0.0.0.0 --port 8000
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - TF_ENABLE_ONEDNN_OPTS=0
+    volumes:
+      - ./module_4_decision_dashboard/audit_store:/app/module_4_decision_dashboard/audit_store
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: causal_recourse_dashboard
+    command: streamlit run module_4_decision_dashboard/dashboard/app.py --server.port 8501 --server.address 0.0.0.0
+    ports:
+      - "8501:8501"
+    depends_on:
+      - api
+    environment:
+      - PYTHONUNBUFFERED=1
+      - TF_ENABLE_ONEDNN_OPTS=0
+    volumes:
+      - ./module_4_decision_dashboard/audit_store:/app/module_4_decision_dashboard/audit_store
+    restart: unless-stopped

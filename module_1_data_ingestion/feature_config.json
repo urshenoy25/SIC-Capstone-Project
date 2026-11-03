@@ -1,0 +1,154 @@
+{
+  "metadata": {
+    "dataset_name": "Telco_Customer_Churn",
+    "domain": "Telecommunications Customer Retention",
+    "version": "1.0.0",
+    "target_column": "Churn",
+    "positive_label": "Yes",
+    "negative_label": "No",
+    "favorable_outcome": 0,
+    "adverse_outcome": 1
+  },
+  "stratification": {
+    "immutable_features": [
+      {
+        "name": "gender",
+        "type": "categorical",
+        "allowed_values": ["Female", "Male"],
+        "reason": "Demographic attribute protected under fairness regulations and physically non-actionable for churn recourse."
+      },
+      {
+        "name": "SeniorCitizen",
+        "type": "binary",
+        "allowed_values": [0, 1],
+        "reason": "Age category protected attribute; immutable historical fact."
+      },
+      {
+        "name": "Partner",
+        "type": "categorical",
+        "allowed_values": ["No", "Yes"],
+        "reason": "Personal relationship status; non-actionable commercial trait."
+      },
+      {
+        "name": "Dependents",
+        "type": "categorical",
+        "allowed_values": ["No", "Yes"],
+        "reason": "Family structure attribute; strictly non-manipulable."
+      },
+      {
+        "name": "tenure",
+        "type": "integer",
+        "min_value": 0,
+        "max_value": 72,
+        "reason": "Historical duration of subscription; cannot be instantaneously modified backwards or forwards."
+      }
+    ],
+    "mutable_features": [
+      {
+        "name": "PhoneService",
+        "type": "categorical",
+        "allowed_values": ["No", "Yes"],
+        "actionability_cost": 1.0,
+        "intervention_type": "subscription_toggle"
+      },
+      {
+        "name": "MultipleLines",
+        "type": "categorical",
+        "allowed_values": ["No", "No phone service", "Yes"],
+        "actionability_cost": 1.5,
+        "intervention_type": "plan_upgrade_downgrade"
+      },
+      {
+        "name": "InternetService",
+        "type": "categorical",
+        "allowed_values": ["DSL", "Fiber optic", "No"],
+        "actionability_cost": 3.0,
+        "intervention_type": "tier_adjustment"
+      },
+      {
+        "name": "OnlineSecurity",
+        "type": "categorical",
+        "allowed_values": ["No", "No internet service", "Yes"],
+        "actionability_cost": 2.0,
+        "intervention_type": "service_addon"
+      },
+      {
+        "name": "OnlineBackup",
+        "type": "categorical",
+        "allowed_values": ["No", "No internet service", "Yes"],
+        "actionability_cost": 2.0,
+        "intervention_type": "service_addon"
+      },
+      {
+        "name": "DeviceProtection",
+        "type": "categorical",
+        "allowed_values": ["No", "No internet service", "Yes"],
+        "actionability_cost": 2.0,
+        "intervention_type": "service_addon"
+      },
+      {
+        "name": "TechSupport",
+        "type": "categorical",
+        "allowed_values": ["No", "No internet service", "Yes"],
+        "actionability_cost": 2.0,
+        "intervention_type": "service_addon"
+      },
+      {
+        "name": "StreamingTV",
+        "type": "categorical",
+        "allowed_values": ["No", "No internet service", "Yes"],
+        "actionability_cost": 1.5,
+        "intervention_type": "entertainment_addon"
+      },
+      {
+        "name": "StreamingMovies",
+        "type": "categorical",
+        "allowed_values": ["No", "No internet service", "Yes"],
+        "actionability_cost": 1.5,
+        "intervention_type": "entertainment_addon"
+      },
+      {
+        "name": "Contract",
+        "type": "categorical",
+        "allowed_values": ["Month-to-month", "One year", "Two year"],
+        "actionability_cost": 4.0,
+        "intervention_type": "contract_commitment"
+      },
+      {
+        "name": "PaperlessBilling",
+        "type": "categorical",
+        "allowed_values": ["No", "Yes"],
+        "actionability_cost": 1.0,
+        "intervention_type": "billing_preference"
+      },
+      {
+        "name": "PaymentMethod",
+        "type": "categorical",
+        "allowed_values": [
+          "Bank transfer (automatic)",
+          "Credit card (automatic)",
+          "Electronic check",
+          "Mailed check"
+        ],
+        "actionability_cost": 2.0,
+        "intervention_type": "payment_channel"
+      },
+      {
+        "name": "MonthlyCharges",
+        "type": "continuous",
+        "min_value": 18.0,
+        "max_value": 125.0,
+        "actionability_cost": 2.5,
+        "intervention_type": "discount_or_bundle"
+      }
+    ],
+    "derived_features": [
+      {
+        "name": "TotalCharges",
+        "type": "continuous",
+        "causal_mechanism": "tenure * MonthlyCharges + epsilon",
+        "reason": "Accumulated billing; strictly determined by tenure and monthly fees, cannot be set directly."
+      }
+    ]
+  }
+}
